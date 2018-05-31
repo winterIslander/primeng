@@ -975,13 +975,14 @@ export class Table implements OnInit, AfterContentInit {
         if(this.filterTimeout) {
             clearTimeout(this.filterTimeout);
         }
-
+        
+        if (!this.isFilterBlank(value)) {
+            this.filters[field] = { value: value, matchMode: matchMode };
+        } else if (this.filters[field]) {
+            delete this.filters[field];
+        }
+        
         this.filterTimeout = setTimeout(() => {
-            if (!this.isFilterBlank(value))
-                this.filters[field] = { value: value, matchMode: matchMode };
-            else if (this.filters[field])
-                delete this.filters[field];
-
             this._filter();
             this.filterTimeout = null;
         }, this.filterDelay);
@@ -1366,6 +1367,7 @@ export class Table implements OnInit, AfterContentInit {
     onColumnResizeBegin(event) {
         let containerLeft = this.domHandler.getOffset(this.containerViewChild.nativeElement).left;
         this.lastResizerHelperX = (event.pageX - containerLeft + this.containerViewChild.nativeElement.scrollLeft);
+        event.preventDefault();
     }
 
     onColumnResize(event) {
